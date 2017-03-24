@@ -16,6 +16,34 @@ use Symfony\Component\HttpFoundation\Request;
 class JobController extends Controller
 {
 
+    public function createAction()
+    {
+        $entity = new Job();
+        $request = $this->getRequest();
+        $form = $this->createForm(new JobType(), $entity);
+        $form->bindRequest($request);
+
+        if ($form->isValid())
+        {
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $em->persist($entity);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('ens_job_show', array(
+                                'company' => $entity->getCompanySlug(),
+                                'location' => $entity->getLocationSlug(),
+                                'id' => $entity->getId(),
+                                'position' => $entity->getPositionSlug()
+            )));
+        }
+
+        return $this->render('EnsJobeetBundle:Job:new.html.twig', array(
+                    'entity' => $entity,
+                    'form' => $form->createView()
+        ));
+    }
+
     /**
      * Lists all job entities.
      *
@@ -74,9 +102,9 @@ class JobController extends Controller
     public function showAction(Job $job)
     {
         $em = $this->getDoctrine()->getManager();
-        
+
         $entity = $em->getRepository('EnsJobeetBundle:Job')->getActiveJob($job->getId());
-        
+
         $deleteForm = $this->createDeleteForm($job);
 
         return $this->render('job/show.html.twig', array(
