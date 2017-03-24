@@ -3,7 +3,6 @@
 namespace Ens\JobeetBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Ens\JobeetBundle\Utils\Jobeet as Jobeet;
 
 /**
@@ -446,10 +445,10 @@ class Job
      */
     public function setExpiresAt($expires_at)
     {
-        if(!$this->getExpiresAt())
+        if (!$this->getExpiresAt())
         {
-          $now = $this->getCreatedAt() ? $this->getCreatedAt()->format('U') : time();
-          $this->expires_at = new \DateTime(date('Y-m-d H:i:s', $now + 86400 * 30));
+            $now = $this->getCreatedAt() ? $this->getCreatedAt()->format('U') : time();
+            $this->expires_at = new \DateTime(date('Y-m-d H:i:s', $now + 86400 * 30));
         }
     }
 
@@ -550,6 +549,16 @@ class Job
     public function getLocationSlug()
     {
         return Jobeet::slugify($this->getLocation());
+    }
+
+    public static function getTypes()
+    {
+        return array('full-time' => 'Full time', 'part-time' => 'Part time', 'freelance' => 'Freelance');
+    }
+
+    public static function getTypeValues()
+    {
+        return array_keys(self::getTypes());
     }
 
 }
