@@ -24,6 +24,8 @@ class Job
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    public $file;
 
     /**
      * 
@@ -341,7 +343,7 @@ class Job
 
     /**
      * Set token
-     *
+     * @ORM\prePersist
      * @param string $token
      *
      * @return job
@@ -559,6 +561,89 @@ class Job
     public static function getTypeValues()
     {
         return array_keys(self::getTypes());
+    }
+
+    protected function getUploadDir()
+    {
+        return 'uploads/jobs';
+    }
+
+    protected function getUploadRootDir()
+    {
+        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
+    }
+
+    public function getWebPath()
+    {
+        return null === $this->logo ? null : $this->getUploadDir() . '/' . $this->logo;
+    }
+
+    public function getAbsolutePath()
+    {
+        return null === $this->logo ? null : $this->getUploadRootDir() . '/' . $this->logo;
+    }
+
+    /**
+     * @ORM\prePersist
+     * @ORM\preUpdate
+     */
+    public function preUpload()
+    {
+        if (null !== $this->file)
+        {
+            // do whatever you want to generate a unique name
+            $this->logo = uniqid() . '.' . $this->file->guessExtension();
+        }
+    }
+
+    /**
+     * @ORM\postPersist
+     * @ORM\postUpdate
+     */
+    public function upload()
+    {
+        if (null === $this->file)
+        {
+            return;
+        }
+
+        // if there is an error when moving the file, an exception will
+        // be automatically thrown by move(). This will properly prevent
+        // the entity from being persisted to the database on error
+        $this->file->move($this->getUploadRootDir(), $this->logo);
+
+        unset($this->file);
+    }
+
+    /**
+     * @ORM\postRemove
+     */
+    public function removeUpload()
+    {
+        if ($file = $this->getAbsolutePath())
+        {
+            unlink($file);
+        }
+    }
+
+    public function isExpired()
+    {
+        return $this->getDaysBeforeExpires() < 0;
+    }
+
+    public function expiresSoon()
+    {
+        return $this->getDaysBeforeExpires() < 5;
+    }
+
+    public function getDaysBeforeExpires()
+    {
+        return ceil(($this->getExpiresAt()->format('U') - time()) / 86400);
+    }
+
+    public function publish()
+    {
+        $this->setIsActivated(true);
     }
 
 }
