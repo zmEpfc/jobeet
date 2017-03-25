@@ -30,7 +30,7 @@ class JobController extends Controller
 
         //hydrate l'objet form. 
         $form->handleRequest($request);
-
+        
         if ($form->isValid())
         {
             return $this->redirect($this->generateUrl('job_preview', array(

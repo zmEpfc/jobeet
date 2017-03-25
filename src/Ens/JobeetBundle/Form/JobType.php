@@ -24,7 +24,7 @@ class JobType extends AbstractType
         $builder->add('how_to_apply');
         $builder->add('is_public');
         $builder->add('email');
-        //$builder->add('type', ChoiceType::class, array('choices' => Job::getTypes()));
+        $builder->add('type', ChoiceType::class, array('choices' => Job::getTypes()));
     }
 
     /**
