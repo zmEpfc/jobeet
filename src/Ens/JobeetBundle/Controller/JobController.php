@@ -17,19 +17,23 @@ use Symfony\Component\HttpFoundation\Request;
 class JobController extends Controller
 {
 
-    
-    public function createAction()
+    /**
+     * Creates a new job entity.
+     *
+     * @Route("/create", name="job_create")
+     * @Method({"POST"})
+     */
+    public function createAction(Request $request)
     {
         $entity = new Job();
-        $request = $this->getRequest();
         $form = $this->createForm(JobType::class, $entity);
-        $form->bindRequest($request);
+
+        //hydrate l'objet form. 
+        $form->handleRequest($request);
 
         if ($form->isValid())
         {
-            // ...
-
-            return $this->redirect($this->generateUrl('ens_job_preview', array(
+            return $this->redirect($this->generateUrl('job_preview', array(
                                 'company' => $entity->getCompanySlug(),
                                 'location' => $entity->getLocationSlug(),
                                 'token' => $entity->getToken(),
@@ -72,19 +76,18 @@ class JobController extends Controller
      * @Method({"GET", "POST"})
      */
     public function newAction(Request $request)
-    {
-
+    {      
         $entity = new Job();
-        $entity->setType('full-time');
-        $form = $this->createForm(JobType::class, $entity);
-
+        $form = $this->createForm(JobType::class, $entity, array(
+            'action' => $this->generateUrl('job_create')));
+        
         return $this->render('EnsJobeetBundle:Job:new.html.twig', array(
                     'entity' => $entity,
                     'form' => $form->createView()
         ));
 
 
-        //        en cas d'erreur c'est peut etre ça qu'il faut mettre
+        //        en cas d'erreur
         //        $job = new Job();
         //        $form = $this->createForm('Ens\JobeetBundle\Form\JobType', $job);
         //        $form->handleRequest($request);
