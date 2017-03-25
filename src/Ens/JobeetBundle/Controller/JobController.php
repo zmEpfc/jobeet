@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 class JobController extends Controller
 {
 
+    
     public function createAction()
     {
         $entity = new Job();

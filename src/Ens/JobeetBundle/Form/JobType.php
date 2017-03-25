@@ -10,11 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 
-
 class JobType extends AbstractType
 {
 
-    
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('category', TextType::class, array('label' => 'Catégorie'));
@@ -30,11 +28,6 @@ class JobType extends AbstractType
         $builder->add('is_public', TextType::class, array('label' => 'est publique ?'));
         $builder->add('email', TextType::class, array('label' => 'e-mail'));
         $builder->add('type', ChoiceType::class, array('choices' => Job::getTypes(), 'expanded' => true));
-    }
-
-    public function getName()
-    {
-        return 'ens_jobeetbundle_jobtype';
     }
 
     /**
@@ -53,6 +46,11 @@ class JobType extends AbstractType
     public function getBlockPrefix()
     {
         return 'ens_jobeetbundle_job';
+    }
+
+    public function getName()
+    {
+        return 'job';
     }
 
 }
