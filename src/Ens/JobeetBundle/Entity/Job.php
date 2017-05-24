@@ -24,7 +24,6 @@ class Job
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
     public $file;
 
     /**
